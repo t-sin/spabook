@@ -1,6 +1,6 @@
 /* shell */
 
-spa.shell = function () {
+spa.shell = (function () {
   var configMap = {
     main_html: String() +
     '<div class="spa-shell-head">' +
@@ -25,11 +25,11 @@ spa.shell = function () {
         jqueryMap = {$container: $container};
   }
 
-  initModule = function () {
+  initModule = function ($container) {
     stateMap.$container = $container;
     $container.html(configMap.main_html);
     setJqueryMap();
   }
 
-  return {initModule: initModule}
-}
+  return {initModule: initModule};
+})();
