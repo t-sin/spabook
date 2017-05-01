@@ -2,6 +2,9 @@
 
 spa.shell = (function () {
   var configMap = {
+    anchor_schema_map: {
+      chat: {open: true, closed: true}
+    },
     main_html: String() +
     '<div class="spa-shell-head">' +
       '<div class="spa-shell-head-logo"></div>' +
@@ -23,11 +26,17 @@ spa.shell = (function () {
     chat_retracted_title: 'Click to extend'
   },
       stateMap = {
-          $container: null,
-          is_chat_retracted: true
+        $container: null,
+        $anchor_map: {},
+        is_chat_retracted: true
       },
       jqueryMap = {},
-      setJqueryMap, toggleChat, onClickChat, initModule;
+      copyAnchorMap, setJqueryMap, toggleChat,
+      changeAnchorPart, onHashChange, onClickChat, initModule;
+
+  copyAnchorMap = function () {
+    return $.extend(true, {}, stateMap.anchor_map);
+  }
 
   setJqueryMap = function () {
     var $container = stateMap.$container;
