@@ -9,9 +9,8 @@ spa.chat = (function () {
         settableMap: {}
     }
         stateMap = {$container: null},
-        jqueryMap = {},
-
-        setJqueryMap, configModule, initModule;
+        jqueryMap = {};
+    var setJqueryMap, configModule, initModule;
 
     setJqueryMap = function () {
       var $container = stateMap.$container;
