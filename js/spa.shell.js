@@ -104,6 +104,11 @@ spa.shell = (function () {
     return false;
   }
 
+  /*
+   * setChatAnchor(position_type)
+   *   - position_type: 'opened' or 'closed'
+   */
+
   setJqueryMap = function () {
     var $container = stateMap.$container;
     jqueryMap = {

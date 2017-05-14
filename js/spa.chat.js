@@ -18,6 +18,13 @@ spa.chat = (function () {
     };
 
     configModule = function (input_map) {
+      /*
+       * API:
+       *   - set_chat_anchor
+       *   - chat_model
+       *   - people_model
+       *   - slider_*
+       */
       spa.util.setConfigMap({
         input_map: input_map,
         settable_map: configMap.settable_map,
