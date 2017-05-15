@@ -84,7 +84,7 @@
 }
 .spa-chat-box input[type=text] {
     float: left;
-    witdth: 75%;
+    width: 75%;
     height: 100%;
     padding: 0.5em;
     border: 0;
@@ -96,7 +96,7 @@
 }
 
 .spa-chat-box div {
-    flaot: left;
+    float: left;
     width: 25%;
     height: 2em;
     line-height: 1.9em;

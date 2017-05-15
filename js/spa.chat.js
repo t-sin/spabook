@@ -18,7 +18,7 @@ spa.chat = (function () {
                 + '<div>Send</div>'
               + '</div>'
             + '</div>',
-        settableMap: {
+        settable_map: {
           slider_open_time: true,
           slider_close_time: true,
           slider_opened_em: true,
