@@ -3,7 +3,7 @@
 spa.shell = (function () {
   var configMap = {
     anchor_schema_map: {
-      chat: {open: true, closed: true}
+      chat: {opened: true, closed: true}
     },
     main_html: String() +
     '<div class="spa-shell-head">' +
@@ -16,7 +16,6 @@ spa.shell = (function () {
       '<div class="spa-shell-main-content"></div>' +
     '</div>' +
     '<div class="spa-shell-foot"></div>' +
-    '<div class="spa-shell-chat"></div>' +
     '<div class="spa-shell-modal"></div>',
     chat_extend_time: 250,
     chat_retract_time: 300,
@@ -31,7 +30,7 @@ spa.shell = (function () {
         is_chat_retracted: true
       },
       jqueryMap = {},
-      copyAnchorMap, setJqueryMap, toggleChat,
+      copyAnchorMap, setJqueryMap, setChatAnchor,
       changeAnchorPart, onHashChange, onClickChat, initModule;
 
   copyAnchorMap = function () {
@@ -72,7 +71,8 @@ spa.shell = (function () {
     var anchor_map_previous = copyAnchorMap(),
         anchor_map_proposed,
         _s_chat_previous, _s_chat_proposed,
-        s_chat_proposed;
+        s_chat_proposed,
+        is_ok = true;
 
     try {
       anchor_map_proposed = $.uriAnchor.makeAnchorMap();
@@ -88,16 +88,26 @@ spa.shell = (function () {
     if (!anchor_map_previous || _s_chat_previous !== _s_chat_proposed) {
       s_chat_proposed = anchor_map_proposed.chat;
       switch (s_chat_proposed) {
-        case 'open':
-          toggleChat(true);
+        case 'opened':
+          is_ok = spa.chat.setSliderPosition('opened');
           break;
         case 'closed':
-          toggleChat(false);
+          is_ok = spa.chat.setSliderPosition('closed');
           break;
         detault:
-          toggleChat(false);
+          spa.chat.setSliderPosition('closed');
           delete anchor_map_proposed.chat;
           $.uriAnchor.setAnchor(anchor_map_proposed, null, true);
+      }
+    }
+
+    if (!is_ok) {
+      if (anchor_map_previous) {
+        $.uriAnchor.setAnchor(anchor_map_previous, null, true);
+        stateMap.anchor_map = anchor_map_previous;
+      } else {
+        delete anchor_map_proposed.chat;
+        $.uriAnchor.setAnchor(anchor_map_proposed, null, true);
       }
     }
 
@@ -108,50 +118,15 @@ spa.shell = (function () {
    * setChatAnchor(position_type)
    *   - position_type: 'opened' or 'closed'
    */
+  setChatAnchor = function (position_type) {
+    return changeAnchorPart({chat: position_type});
+  }
 
   setJqueryMap = function () {
     var $container = stateMap.$container;
     jqueryMap = {
-      $container: $container,
-      $chat: $container.find('.spa-shell-chat')
+      $container: $container
     };
-  };
-
-    /*
-     * callback: chat -> void
-     */
-    toggleChat = function (do_extend, callback) {
-    var px_chat_ht = jqueryMap.$chat.height(),
-        is_open = px_chat_ht === configMap.chat_extend_height,
-        is_closed = px_chat_ht === configMap.chat_retract_height,
-        is_sliding = !is_open && !is_closed;
-
-    if (is_sliding) {return false;}
-    if (do_extend) {
-      jqueryMap.$chat.animate(
-        {height: configMap.chat_extend_height},
-        configMap.chat_extend_time,
-        function () {
-          jqueryMap.$chat.attr(
-            'title', configMap.chat_extended_title);
-          stateMap.is_chat_retracted = false;
-          if (callback) {callback(jqueryMap.$chat);}
-        }
-      );
-      return true;
-    }
-
-    jqueryMap.$chat.animate(
-      {height: configMap.chat_retract_height},
-      configMap.chat_retract_time,
-      function () {
-        jqueryMap.$chat.attr(
-          'title', configMap.chat_retracted_title);
-        stateMap.is_chat_retracted = true;
-        if (callback) {callback(jqueryMap.$chat);}
-      });
-      return true;
-
   };
 
   onClickChat = function (event) {
@@ -165,15 +140,15 @@ spa.shell = (function () {
     $container.html(configMap.main_html);
     setJqueryMap();
 
-    stateMap.is_chat_retracted = true;
-    jqueryMap.$chat
-      .attr('title', configMap.chat_retracted_title)
-      .click(onClickChat)
     $.uriAnchor.configModule({
       schema_map: configMap.anchor_schama_map
     });
-    spa.chat.configModule({});
-    spa.chat.initModule(jqueryMap.$chat);
+    spa.chat.configModule({
+      set_chat_anchor: setChatAnchor,
+      chat_model: spa.model.chat,
+      people_model: spa.model.people
+    });
+    spa.chat.initModule(jqueryMap.$container);
 
     $(window).bind('hashchange', onHashChange)
              .trigger('hashchange');
